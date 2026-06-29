@@ -1,61 +1,110 @@
-#include <vector>
-#include <iostream>
-#include <string>
+#include "include.hpp"
 
-enum struct TokenType
+enum TokenTypes
 {
-    VER_INIT,
-    VER_NAME,
-    VER_VALUE,
+    // DataTpes
+    TYPE_INT,
+    TYPE_STRING,
+    TYPE_BOOLEAN,
 
-    // operators
-    COMMA,
-    EQUALS
+    OPERATION_ADDITON,
+    OPERATION_SUBTRACTION,
+    OPERATION_MULTIPLICATION,
+    OPERATION_DIVISION,
 };
-struct Token
+
+struct Tokens
 {
-    TokenType type;
+    TokenTypes type;
     std::string value;
 };
 
-std::vector<Token> Lexer(const std::string &source)
+std::vector<Tokens> Lexer(const std::string &source)
 {
+    std::vector<Tokens> tokens;
     int i = 0;
-    std::vector<Token> token;
-
     while (i < source.size())
     {
-        if (isspace((unsigned char)source[i]))
+        // Remove empty strings
+
+        // DataTypes
+
+        // --Intiger
+        if (isdigit(source[i]))
         {
+            int start = i;
+            // Skip over Num
             i++;
-            continue;
+
+            while (isdigit(source[i]) && !isspace(source[i]))
+            {
+                i++;
+            }
+            tokens.push_back({{TYPE_INT}, {source.substr(start, i - start)}});
         }
 
-        // init veriable
-        if (source.substr(i, i + 3) == "ver")
+        // --Strings
+        if (source[i] == '"')
         {
-            token.push_back({{TokenType::VER_INIT}, "-ver"});
-            i += 3;
+            int start = i;
+            // Skip over String
+            i++;
 
-            // Name
-            int nameStart = i;
-            while (source[i] != '='){ i++; }
-            token.push_back({{TokenType::VER_NAME}, "-name"});
+            while (source[i] != '"')
+            {
+                i++;
+            }
+            tokens.push_back({{TYPE_STRING}, {source.substr(start, i - start + 1)}});
+            i++; // move on from the string
+        }
 
-            // Assign symbol
-            token.push_back({{TokenType::EQUALS}, "-assign"});
-            i++; // skip over symbol
+        // --Booleans
+        if (source[i] == 't' || source[i] == 'f')
+        {
+            std::string trueCheck = "true";
+            std::string falseCheck = "false";
 
-            while (isspace(source[i])){ i++; }
-            int valueStart = i;
+            int j = 0;
 
-            while (!isspace(source[i])){ i++; }
-            token.push_back({{TokenType::VER_VALUE}, '-' + source.substr(valueStart,i)});
-            continue;
-        } 
+            if (source[i] == 't')
+            {
+                while (source[i] == trueCheck[j] && j < trueCheck.size())
+                {
+                    j++;
+                    i++;
+                }
+                if (j == trueCheck.size())
+                    tokens.push_back({{TYPE_BOOLEAN}, {'1'}});
+            }
+            else
+            {
+                while (source[i] == falseCheck[j] && j < falseCheck.size())
+                {
+                    j++;
+                    i++;
+                }
+                if (j == falseCheck.size())
+                    tokens.push_back({{TYPE_BOOLEAN}, {'0'}});
+            }
+        }
 
-        i++;
+        // arthmetic operations
+        if (source[i] == '-' || source[i] == '+' || source[i] == '/' || source[i] == '*')
+        {
+            tokens.push_back({{OPERATION_SUBTRACTION}, {'-'}});
+            // switch (source[i])
+            // {
+            // case '-': tokens.push_back({{OPERATION_SUBTRACTION}, {'-'}}); break;
+            // case '+': tokens.push_back({{OPERATION_ADDITON}, {'+'}}); break;
+
+            // case '*': tokens.push_back({{OPERATION_DIVISION}, {'*'}}); break;
+            // case '/': tokens.push_back({{OPERATION_MULTIPLICATION}, {'/'}}); break;
+            // }
+        }
+
+        // Move on
+        if (isspace(source[i])) { i++; }
     }
 
-    return token;
+    return tokens;
 }

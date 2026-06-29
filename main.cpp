@@ -1,16 +1,34 @@
-#include <vector>
-#include <iostream>
-#include <string>
-#include "./include/lexer.hpp"
+#include "include/include.hpp"
+#include "include/lexer.hpp"
 
-int main(){
-    std::string source = "ver zee = 17;";
-    std::vector<Token> tokens = Lexer(source);
-    
+void CheckProgram(std::string type, std::string value);
+
+int main()
+{
+    const std::string source = "-";
+    std::vector<Tokens> tokens = Lexer(source);
+
     for (int i = 0; i < tokens.size(); i++)
     {
-        std::cout << static_cast<int>(tokens[i].type)  << tokens[i].value << ',';
+        const std::string value = tokens[i].value;
+
+        switch (tokens[i].type)
+        {
+            // Data types
+            case 0: CheckProgram("int", value); break;
+            case 1: CheckProgram("str", value); break;
+            case 2: CheckProgram("boolean", value); break;
+
+            // arthmetic operations
+            case 3: CheckProgram("ADDITION", value); break;
+            case 4: CheckProgram("SUBTRACTION", value); break;
+            case 5: CheckProgram("MULTIPLICATION", value); break;
+            case 6: CheckProgram("DIVISION", value); break;
+        }
     }
-    
-    return 0;
+}
+
+void CheckProgram(std::string type, std::string value)
+{
+    std::cout << type << '-' << value << ',' << '\n';
 }
