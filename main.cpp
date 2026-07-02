@@ -5,13 +5,12 @@ void CheckProgram(std::string type, std::string value);
 
 int main()
 {
-    const std::string source = "-";
+    const std::string source = "123-23--123-3\"zee\"++++--////***";
     std::vector<Tokens> tokens = Lexer(source);
 
     for (int i = 0; i < tokens.size(); i++)
     {
         const std::string value = tokens[i].value;
-
         switch (tokens[i].type)
         {
             // Data types
@@ -28,7 +27,6 @@ int main()
     }
 }
 
-void CheckProgram(std::string type, std::string value)
-{
+void CheckProgram(std::string type, std::string value){
     std::cout << type << '-' << value << ',' << '\n';
 }
